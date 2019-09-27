@@ -99,7 +99,7 @@ describe('Api Session', () => {
 				});
 
 				sinon.assert.calledOnce(ModelClient.prototype.getByField);
-				sinon.assert.calledWithExactly(ModelClient.prototype.getByField, 'clientCode', 'some-client-code');
+				sinon.assert.calledWithExactly(ModelClient.prototype.getByField, 'code', 'some-client-code');
 			});
 
 			it('Should inject the client with a working getInstance', async () => {
@@ -158,7 +158,7 @@ describe('Api Session', () => {
 				});
 
 				sinon.assert.calledOnce(ModelClient.prototype.getByField);
-				sinon.assert.calledWithExactly(ModelClient.prototype.getByField, 'clientCode', 'some-client-code');
+				sinon.assert.calledWithExactly(ModelClient.prototype.getByField, 'code', 'some-client-code');
 			});
 
 			it('Should fetch the client from de DB again after 10 minutes', async () => {
@@ -196,7 +196,7 @@ describe('Api Session', () => {
 				});
 
 				sinon.assert.calledTwice(ModelClient.prototype.getByField);
-				sinon.assert.calledWithExactly(ModelClient.prototype.getByField, 'clientCode', 'some-client-code');
+				sinon.assert.calledWithExactly(ModelClient.prototype.getByField, 'code', 'some-client-code');
 			});
 		});
 	});

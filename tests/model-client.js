@@ -66,12 +66,36 @@ describe('Client Model', () => {
 		});
 	});
 
+	describe('Identifier field static getter', () => {
+
+		beforeEach(() => {
+			sinon.stub(Settings, 'get');
+		});
+
+		it('Should return the default field if settings are not defined', () => {
+			assert.strictEqual(ModelClient.identifierField, 'code');
+		});
+
+		it('Should return the default field if identifierField setting is not defined', () => {
+
+			Settings.get.returns({ foo: 'bar' });
+
+			assert.strictEqual(ModelClient.identifierField, 'code');
+		});
+
+		it('Should return the field from the settings if it\'s present', () => {
+
+			Settings.get.returns({ identifierField: 'custom-field' });
+
+			assert.strictEqual(ModelClient.identifierField, 'custom-field');
+		});
+	});
+
 	describe('Fields static getter', () => {
 
 		it('Should return the model available fields', () => {
 			assert.deepStrictEqual(ModelClient.fields, {
-				name: true,
-				storename: true
+				code: true
 			});
 		});
 	});
@@ -91,7 +115,7 @@ describe('Client Model', () => {
 
 		it('Should not fetch the client if value is not passed', async () => {
 
-			const client = await modelClient.getByField('name', '');
+			const client = await modelClient.getByField('code', '');
 
 			assert.strictEqual(client, undefined);
 		});
@@ -100,12 +124,12 @@ describe('Client Model', () => {
 
 			Model.prototype.get.rejects('Some internal error');
 
-			await assert.rejects(() => modelClient.getByField('name', 'fizzmod'));
+			await assert.rejects(() => modelClient.getByField('code', 'fizzmod'));
 
 			sinon.assert.calledOnce(Model.prototype.get);
 			sinon.assert.calledWithExactly(Model.prototype.get, {
 				filters: {
-					name: 'fizzmod'
+					code: 'fizzmod'
 				},
 				limit: 1
 			});
@@ -117,14 +141,14 @@ describe('Client Model', () => {
 
 			Model.prototype.get.resolves({ ...clientMock });
 
-			const client = await modelClient.getByField('name', 'fizzmod');
+			const client = await modelClient.getByField('code', 'fizzmod');
 
 			assert.deepStrictEqual(client, clientMock);
 
 			sinon.assert.calledOnce(Model.prototype.get);
 			sinon.assert.calledWithExactly(Model.prototype.get, {
 				filters: {
-					name: 'fizzmod'
+					code: 'fizzmod'
 				},
 				limit: 1
 			});
