@@ -26,6 +26,16 @@ ApiSession has the following getters:
 * permissions {array} The permission keys or undefined in case there are no permissions associated
 * *async* client {object} Resolves to the client object with the `getInstance()` method injected. The properties depend on your client internal structure. The client is injected with a `getInstance()` method to propagate the session to other instances.
 
+## Settings
+The package has some configurable parameters, which are loaded using [@janiscommerce/settings](https://www.npmjs.com/package/@janiscommerce/settings)
+
+| Setting | Description | Default value |
+| --- | --- | --- |
+| `clients.databaseKey` | Indicates the DB key to use to fetch a session's client | `'_default'` |
+| `clients.table` | Indicates the table to use to fetch a session's client | `'clients'` |
+| `clients.identifierField` | Indicates the field to use as a filter to fetch a session's client | `'code'` |
+
+
 ## Usage
 ```js
 const { ApiSession, ApiSessionError } = require('@janiscommerce/api-session');
