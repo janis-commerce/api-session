@@ -31,7 +31,7 @@ The package has some configurable parameters, which are loaded using [@janiscomm
 
 | Setting | Description | Default value |
 | --- | --- | --- |
-| `clients.databaseKey` | Indicates the DB key to use to fetch a session's client | `'_default'` |
+| `clients.databaseKey` | Indicates the DB key to use to fetch a session's client | `'core'` |
 | `clients.table` | Indicates the table to use to fetch a session's client | `'clients'` |
 | `clients.identifierField` | Indicates the field to use as a filter to fetch a session's client | `'code'` |
 

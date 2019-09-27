@@ -23,14 +23,14 @@ describe('Client Model', () => {
 		});
 
 		it('Should return the default key if settings are not defined', () => {
-			assert.strictEqual(modelClient.databaseKey, '_default');
+			assert.strictEqual(modelClient.databaseKey, 'core');
 		});
 
 		it('Should return the default key if databaseKey setting is not defined', () => {
 
 			Settings.get.returns({ foo: 'bar' });
 
-			assert.strictEqual(modelClient.databaseKey, '_default');
+			assert.strictEqual(modelClient.databaseKey, 'core');
 		});
 
 		it('Should return the key from the settings if it\'s present', () => {
