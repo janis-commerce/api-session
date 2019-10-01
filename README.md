@@ -60,9 +60,12 @@ const session = new ApiSession({
 
 console.log(`Session created for user ${session.userId} on client ${session.clientCode}.`);
 
-const client = await session.client;
+const sessionInjectedModel = session.getSessionInstance(SomeModel);
 
-const sessionInjectedModel = client.getInstance(SomeModel);
+console.log(`Session is propagated for user ${sessionInjectedModel.session.userId} on client ${sessionInjectedModel.session.clientCode}.`);
 
-console.log(`Session is propagated for user ${sessionInjectedModel.session.userId} on client ${sessionInjectedModel.session.clientCode}.`):
+const client = await sessionInjectedModel.client;
+
+console.log(client);
+// Outputs your client object
 ```

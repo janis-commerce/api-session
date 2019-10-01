@@ -124,7 +124,19 @@ describe('Api Session', () => {
 
 				const testInstance = client.getInstance(Test);
 
-				assert.strictEqual(testInstance.session, session);
+				assert.deepStrictEqual(testInstance.session, session);
+			});
+		});
+
+		describe('getSessionInstance', () => {
+
+			it('Should return an instance with the session injected', () => {
+
+				class Test {}
+
+				const testInstance = session.getSessionInstance(Test);
+
+				assert.deepStrictEqual(testInstance.session, session);
 			});
 		});
 
