@@ -64,7 +64,7 @@ const sessionInjectedModel = session.getSessionInstance(SomeModel);
 
 console.log(`Session is propagated for user ${sessionInjectedModel.session.userId} on client ${sessionInjectedModel.session.clientCode}.`);
 
-const client = await sessionInjectedModel.client;
+const client = await sessionInjectedModel.session.client;
 
 console.log(client);
 // Outputs your client object
