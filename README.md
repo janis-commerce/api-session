@@ -13,6 +13,10 @@ npm install @janiscommerce/api-session
 ## API
 The package exports two classes ApiSession and ApiSessionError.
 
+* validateStore(storeId)
+Validate if the store given is valid for the session.
+Returns *Boolean*.
+
 ### ApiSession
 
 * constructor(authorizationData)
@@ -23,6 +27,8 @@ ApiSession has the following getters:
 * clientId {string} The ID of the client or undefined in case there is no client
 * clientCode {string} The code of the client or undefined in case there is no client
 * profileId {string} The ID of the profile or undefined in case there is no profile
+* stores {array<string>} The List of stores
+* hasAccessToAllStores {boolean} If has access to all stores
 * permissions {array} The permission keys or undefined in case there are no permissions associated
 * *async* client {object} Resolves to the client object with the `getInstance()` method injected. The properties depend on your client internal structure. The client is injected with a `getInstance()` method to propagate the session to other instances.
 
@@ -55,7 +61,9 @@ const session = new ApiSession({
 	permissions: [
 		'catalog:product:read',
 		'catalog:product:write'
-	]
+	],
+	stores: ['store-1'],
+	hasAccessToAllStores: false
 });
 
 console.log(`Session created for user ${session.userId} on client ${session.clientCode}.`);
@@ -68,4 +76,9 @@ const client = await sessionInjectedModel.session.client;
 
 console.log(client);
 // Outputs your client object
+
+const hasAccess = session.validateStore('store-1');
+
+console.log(`Session has access to store 1: ${hasAccess}`);
+// Outputs 'Session has access to store 1: true'
 ```
