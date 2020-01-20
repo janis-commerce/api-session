@@ -40,6 +40,20 @@ describe('Api Session', () => {
 			it('Should return undefined for client', async () => {
 				assert.strictEqual(await session.client, undefined);
 			});
+
+			it('Should return undefined for stores', async () => {
+				assert.strictEqual(session.stores, undefined);
+			});
+
+			it('Should return undefined for hasAccessToAllStores', async () => {
+				assert.strictEqual(session.hasAccessToAllStores, undefined);
+			});
+		});
+
+		describe('Validate Store', () => {
+			it('Should return false', () => {
+				assert.strictEqual(session.validateStore('store-id'), false);
+			});
 		});
 	});
 
@@ -50,7 +64,9 @@ describe('Api Session', () => {
 			clientId: 'some-client-id',
 			clientCode: 'some-client-code',
 			profileId: 'some-profile-id',
-			permissions: ['service:namespace:method1', 'service:namespace:method2']
+			permissions: ['service:namespace:method1', 'service:namespace:method2'],
+			stores: ['store-1', 'store-2'],
+			hasAccessToAllStores: false
 		});
 
 		describe('Getters', () => {
@@ -72,6 +88,14 @@ describe('Api Session', () => {
 
 			it('Should return the correct permissions', () => {
 				assert.deepStrictEqual(session.permissions, ['service:namespace:method1', 'service:namespace:method2']);
+			});
+
+			it('Should return the correct stores', () => {
+				assert.deepStrictEqual(session.stores, ['store-1', 'store-2']);
+			});
+
+			it('Should return the correct hasAccessToAllStores', () => {
+				assert.strictEqual(session.hasAccessToAllStores, false);
 			});
 
 			it('Should throw if client can\'t be fetched', async () => {
@@ -211,6 +235,96 @@ describe('Api Session', () => {
 				sinon.assert.calledWithExactly(ModelClient.prototype.getByField, 'code', 'some-client-code');
 			});
 		});
-	});
 
+		describe('Validate Store', () => {
+
+			it('Should return false when session has not access to all store and no storeId is passed', () => {
+				assert.strictEqual(session.validateStore(), false);
+			});
+
+			it('Should return false when session has not stores field', () => {
+
+				const invalidSession = new ApiSession({
+					userId: 'some-user-id',
+					clientId: 'some-client-id',
+					clientCode: 'some-client-code',
+					profileId: 'some-profile-id',
+					permissions: ['service:namespace:method1', 'service:namespace:method2'],
+					hasAccessToAllStores: false
+				});
+
+				assert.strictEqual(invalidSession.validateStore('store-1'), false);
+			});
+
+			it('Should return false when session has not valid stores field', () => {
+
+				const invalidSession = new ApiSession({
+					userId: 'some-user-id',
+					clientId: 'some-client-id',
+					clientCode: 'some-client-code',
+					profileId: 'some-profile-id',
+					permissions: ['service:namespace:method1', 'service:namespace:method2'],
+					stores: { 1: 'store-1', 2: 'store-2' },
+					hasAccessToAllStores: false
+				});
+
+				assert.strictEqual(invalidSession.validateStore('store-1'), false);
+			});
+
+			it('Should return false when session has not valid stores field', () => {
+
+				const invalidSession = new ApiSession({
+					userId: 'some-user-id',
+					clientId: 'some-client-id',
+					clientCode: 'some-client-code',
+					profileId: 'some-profile-id',
+					permissions: ['service:namespace:method1', 'service:namespace:method2'],
+					stores: { 1: 'store-1', 2: 'store-2' },
+					hasAccessToAllStores: false
+				});
+
+				assert.strictEqual(invalidSession.validateStore('store-1'), false);
+			});
+
+			it('Should return false when session has an empty array of stores', () => {
+
+				const invalidSession = new ApiSession({
+					userId: 'some-user-id',
+					clientId: 'some-client-id',
+					clientCode: 'some-client-code',
+					profileId: 'some-profile-id',
+					permissions: ['service:namespace:method1', 'service:namespace:method2'],
+					stores: [],
+					hasAccessToAllStores: false
+				});
+
+				assert.strictEqual(invalidSession.validateStore('store-1'), false);
+			});
+
+			it('Should return true when session has access to that store', () => {
+				assert.strictEqual(session.validateStore('store-1'), true);
+				assert.strictEqual(session.validateStore('store-2'), true);
+			});
+
+			it('Should return false when session has no access to that store', () => {
+				assert.strictEqual(session.validateStore('store-0'), false);
+				assert.strictEqual(session.validateStore('store-3'), false);
+			});
+
+			it('Should return true when session has access to all stores', () => {
+
+				const invalidSession = new ApiSession({
+					userId: 'some-user-id',
+					clientId: 'some-client-id',
+					clientCode: 'some-client-code',
+					profileId: 'some-profile-id',
+					permissions: ['service:namespace:method1', 'service:namespace:method2'],
+					stores: [],
+					hasAccessToAllStores: true
+				});
+
+				assert.strictEqual(invalidSession.validateStore('store-1'), true);
+			});
+		});
+	});
 });
