@@ -24,6 +24,9 @@ Receives an object with the following (optional) properties: { userId, clientId,
 
 ApiSession has the following getters:
 * userId {string} The ID of the user or undefined in case there is no user
+* userIsDev {boolean} If user is dev
+* serviceName {string} The name of the service or undefined in case there is no service
+* isService {boolean} If session is associated to a service
 * clientId {string} The ID of the client or undefined in case there is no client
 * clientCode {string} The code of the client or undefined in case there is no client
 * profileId {string} The ID of the profile or undefined in case there is no profile
@@ -55,6 +58,7 @@ const SomeModel = require('../models/some-model');
 
 const session = new ApiSession({
 	userId: 1,
+	userIsDev: false,
 	clientId: 2,
 	clientCode: 'janis',
 	profileId: 5,
