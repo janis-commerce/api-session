@@ -48,6 +48,18 @@ describe('Api Session', () => {
 			it('Should return undefined for hasAccessToAllStores', async () => {
 				assert.strictEqual(session.hasAccessToAllStores, undefined);
 			});
+
+			it('Should return false for userIsDev', () => {
+				assert.strictEqual(session.userIsDev, false);
+			});
+
+			it('Should return undefined for serviceName', () => {
+				assert.strictEqual(session.serviceName, undefined);
+			});
+
+			it('Should return false for isService', () => {
+				assert.strictEqual(session.isService, false);
+			});
 		});
 
 		describe('Validate Store', () => {
@@ -60,7 +72,9 @@ describe('Api Session', () => {
 	context('User related authentication data', () => {
 
 		const session = new ApiSession({
+			serviceName: 'some-service',
 			userId: 'some-user-id',
+			userIsDev: true,
 			clientId: 'some-client-id',
 			clientCode: 'some-client-code',
 			profileId: 'some-profile-id',
@@ -84,6 +98,18 @@ describe('Api Session', () => {
 
 			it('Should return the correct profileId', () => {
 				assert.strictEqual(session.profileId, 'some-profile-id');
+			});
+
+			it('Should return the correct userIsDev', () => {
+				assert.strictEqual(session.userIsDev, true);
+			});
+
+			it('Should return the correct serviceName', () => {
+				assert.strictEqual(session.serviceName, 'some-service');
+			});
+
+			it('Should return the correct isService', () => {
+				assert.strictEqual(session.isService, true);
 			});
 
 			it('Should return the correct permissions', () => {
