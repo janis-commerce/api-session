@@ -36,7 +36,7 @@ ApiSession has the following getters:
 * *async* client {object} Resolves to the client object with the `getInstance()` method injected. The properties depend on your client internal structure. The client is injected with a `getInstance()` method to propagate the session to other instances.
 
 
-:warning::skull: Since version 2.0.0 stores and hasAccessToAllStores getters have been removed . Also the method validateStore(storeId). :skull::warning:
+:warning::skull: Since version 2.0.0 stores and hasAccessToAllStores getters have been removed . Also the method validateStore(storeId). Now it supports locations with  locations and hasAccesToAllLocations getters and also the method validateLocation(locationId) :skull::warning:
 
 ## Settings
 The package has some configurable parameters, which are loaded using [@janiscommerce/settings](https://www.npmjs.com/package/@janiscommerce/settings)
