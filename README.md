@@ -13,14 +13,14 @@ npm install @janiscommerce/api-session
 ## API
 The package exports two classes ApiSession and ApiSessionError.
 
-* validateStore(storeId)
-Validate if the store given is valid for the session.
-Returns *Boolean*.
-
 ### ApiSession
 
 * constructor(authorizationData)
 Receives an object with the following (optional) properties: { userId, clientId, clientCode, profileId, permissions }
+
+* validateLocation(locationId)
+Validate if the location given is valid for the session.
+Returns *Boolean*.
 
 ApiSession has the following getters:
 * userId {string} The ID of the user or undefined in case there is no user
@@ -30,10 +30,13 @@ ApiSession has the following getters:
 * clientId {string} The ID of the client or undefined in case there is no client
 * clientCode {string} The code of the client or undefined in case there is no client
 * profileId {string} The ID of the profile or undefined in case there is no profile
-* stores {array<string>} The List of stores
-* hasAccessToAllStores {boolean} If has access to all stores
+* locations {array<string>} The List of locations
+* hasAccessToAllLocations {boolean} If has access to all locations
 * permissions {array} The permission keys or undefined in case there are no permissions associated
 * *async* client {object} Resolves to the client object with the `getInstance()` method injected. The properties depend on your client internal structure. The client is injected with a `getInstance()` method to propagate the session to other instances.
+
+
+:warning::skull: Since version 2.0.0 stores and hasAccesToAllStores getters have been removed . Also the method validateStore(storeId). :skull::warning:
 
 ## Settings
 The package has some configurable parameters, which are loaded using [@janiscommerce/settings](https://www.npmjs.com/package/@janiscommerce/settings)
@@ -66,8 +69,8 @@ const session = new ApiSession({
 		'catalog:product:read',
 		'catalog:product:write'
 	],
-	stores: ['store-1'],
-	hasAccessToAllStores: false
+	locations: ['location-1'],
+	hasAccessToAllLocations: false
 });
 
 console.log(`Session created for user ${session.userId} on client ${session.clientCode}.`);
@@ -81,8 +84,8 @@ const client = await sessionInjectedModel.session.client;
 console.log(client);
 // Outputs your client object
 
-const hasAccess = session.validateStore('store-1');
+const hasAccess = session.validateLocation('location-1');
 
-console.log(`Session has access to store 1: ${hasAccess}`);
-// Outputs 'Session has access to store 1: true'
+console.log(`Session has access to location 1: ${hasAccess}`);
+// Outputs 'Session has access to location 1: true'
 ```

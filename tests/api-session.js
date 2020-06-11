@@ -41,12 +41,12 @@ describe('Api Session', () => {
 				assert.strictEqual(await session.client, undefined);
 			});
 
-			it('Should return undefined for stores', async () => {
-				assert.strictEqual(session.stores, undefined);
+			it('Should return undefined for locations', async () => {
+				assert.strictEqual(session.locations, undefined);
 			});
 
-			it('Should return undefined for hasAccessToAllStores', async () => {
-				assert.strictEqual(session.hasAccessToAllStores, undefined);
+			it('Should return undefined for hasAccessToAllLocations', async () => {
+				assert.strictEqual(session.hasAccessToAllLocations, undefined);
 			});
 
 			it('Should return false for userIsDev', () => {
@@ -62,9 +62,9 @@ describe('Api Session', () => {
 			});
 		});
 
-		describe('Validate Store', () => {
+		describe('Validate Locations', () => {
 			it('Should return false', () => {
-				assert.strictEqual(session.validateStore('store-id'), false);
+				assert.strictEqual(session.validateLocation('locations-id'), false);
 			});
 		});
 	});
@@ -79,8 +79,8 @@ describe('Api Session', () => {
 			clientCode: 'some-client-code',
 			profileId: 'some-profile-id',
 			permissions: ['service:namespace:method1', 'service:namespace:method2'],
-			stores: ['store-1', 'store-2'],
-			hasAccessToAllStores: false
+			locations: ['location-1', 'location-2'],
+			hasAccessToAllLocations: false
 		});
 
 		describe('Getters', () => {
@@ -116,12 +116,12 @@ describe('Api Session', () => {
 				assert.deepStrictEqual(session.permissions, ['service:namespace:method1', 'service:namespace:method2']);
 			});
 
-			it('Should return the correct stores', () => {
-				assert.deepStrictEqual(session.stores, ['store-1', 'store-2']);
+			it('Should return the correct locations', () => {
+				assert.deepStrictEqual(session.locations, ['location-1', 'location-2']);
 			});
 
-			it('Should return the correct hasAccessToAllStores', () => {
-				assert.strictEqual(session.hasAccessToAllStores, false);
+			it('Should return the correct hasAccessToAllLocations', () => {
+				assert.strictEqual(session.hasAccessToAllLocations, false);
 			});
 
 			it('Should throw if client can\'t be fetched', async () => {
@@ -262,13 +262,13 @@ describe('Api Session', () => {
 			});
 		});
 
-		describe('Validate Store', () => {
+		describe('Validate location', () => {
 
-			it('Should return false when session has not access to all store and no storeId is passed', () => {
-				assert.strictEqual(session.validateStore(), false);
+			it('Should return false when session has not access to all location and no locationId is passed', () => {
+				assert.strictEqual(session.validateLocation(), false);
 			});
 
-			it('Should return false when session has not stores field', () => {
+			it('Should return false when session has not locations field', () => {
 
 				const invalidSession = new ApiSession({
 					userId: 'some-user-id',
@@ -276,13 +276,13 @@ describe('Api Session', () => {
 					clientCode: 'some-client-code',
 					profileId: 'some-profile-id',
 					permissions: ['service:namespace:method1', 'service:namespace:method2'],
-					hasAccessToAllStores: false
+					hasAccessToAlllocations: false
 				});
 
-				assert.strictEqual(invalidSession.validateStore('store-1'), false);
+				assert.strictEqual(invalidSession.validateLocation('location-1'), false);
 			});
 
-			it('Should return false when session has not valid stores field', () => {
+			it('Should return false when session has not valid locations field', () => {
 
 				const invalidSession = new ApiSession({
 					userId: 'some-user-id',
@@ -290,14 +290,14 @@ describe('Api Session', () => {
 					clientCode: 'some-client-code',
 					profileId: 'some-profile-id',
 					permissions: ['service:namespace:method1', 'service:namespace:method2'],
-					stores: { 1: 'store-1', 2: 'store-2' },
-					hasAccessToAllStores: false
+					locations: { 1: 'location-1', 2: 'location-2' },
+					hasAccessToAllLocations: false
 				});
 
-				assert.strictEqual(invalidSession.validateStore('store-1'), false);
+				assert.strictEqual(invalidSession.validateLocation('location-1'), false);
 			});
 
-			it('Should return false when session has not valid stores field', () => {
+			it('Should return false when session has not valid locations field', () => {
 
 				const invalidSession = new ApiSession({
 					userId: 'some-user-id',
@@ -305,14 +305,14 @@ describe('Api Session', () => {
 					clientCode: 'some-client-code',
 					profileId: 'some-profile-id',
 					permissions: ['service:namespace:method1', 'service:namespace:method2'],
-					stores: { 1: 'store-1', 2: 'store-2' },
-					hasAccessToAllStores: false
+					locations: { 1: 'location-1', 2: 'location-2' },
+					hasAccessToAllLocations: false
 				});
 
-				assert.strictEqual(invalidSession.validateStore('store-1'), false);
+				assert.strictEqual(invalidSession.validateLocation('location-1'), false);
 			});
 
-			it('Should return false when session has an empty array of stores', () => {
+			it('Should return false when session has an empty array of locations', () => {
 
 				const invalidSession = new ApiSession({
 					userId: 'some-user-id',
@@ -320,24 +320,24 @@ describe('Api Session', () => {
 					clientCode: 'some-client-code',
 					profileId: 'some-profile-id',
 					permissions: ['service:namespace:method1', 'service:namespace:method2'],
-					stores: [],
-					hasAccessToAllStores: false
+					locations: [],
+					hasAccessToAllLocations: false
 				});
 
-				assert.strictEqual(invalidSession.validateStore('store-1'), false);
+				assert.strictEqual(invalidSession.validateLocation('location-1'), false);
 			});
 
-			it('Should return true when session has access to that store', () => {
-				assert.strictEqual(session.validateStore('store-1'), true);
-				assert.strictEqual(session.validateStore('store-2'), true);
+			it('Should return true when session has access to that location', () => {
+				assert.strictEqual(session.validateLocation('location-1'), true);
+				assert.strictEqual(session.validateLocation('location-2'), true);
 			});
 
-			it('Should return false when session has no access to that store', () => {
-				assert.strictEqual(session.validateStore('store-0'), false);
-				assert.strictEqual(session.validateStore('store-3'), false);
+			it('Should return false when session has no access to that location', () => {
+				assert.strictEqual(session.validateLocation('location-0'), false);
+				assert.strictEqual(session.validateLocation('location-3'), false);
 			});
 
-			it('Should return true when session has access to all stores', () => {
+			it('Should return true when session has access to all locations', () => {
 
 				const invalidSession = new ApiSession({
 					userId: 'some-user-id',
@@ -345,11 +345,11 @@ describe('Api Session', () => {
 					clientCode: 'some-client-code',
 					profileId: 'some-profile-id',
 					permissions: ['service:namespace:method1', 'service:namespace:method2'],
-					stores: [],
-					hasAccessToAllStores: true
+					locations: [],
+					hasAccessToAllLocations: true
 				});
 
-				assert.strictEqual(invalidSession.validateStore('store-1'), true);
+				assert.strictEqual(invalidSession.validateLocation('location-1'), true);
 			});
 		});
 	});
