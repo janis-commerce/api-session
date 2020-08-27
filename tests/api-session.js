@@ -1,16 +1,37 @@
 'use strict';
 
 const assert = require('assert');
-const sinon = require('sinon');
+const sandbox = require('sinon').createSandbox();
+
+const mockRequire = require('mock-require');
 
 const { ApiSession, ApiSessionError } = require('../lib');
-const ModelClient = require('./../lib/model-client');
+const Client = require('./../lib/client');
 
 describe('Api Session', () => {
 
 	afterEach(() => {
-		sinon.restore();
+		sandbox.restore();
+		Client._instance = null; // eslint-disable-line
+		Client._clientsCache = null; // eslint-disable-line
 	});
+
+	const ClientModel = class ClientModel {
+
+		async getBy() {
+			// nothing to do here, just for stub
+		}
+	};
+
+	const loadModelClient = clients => {
+
+		mockRequire(Client.getRelativePath(), ClientModel);
+
+		if(clients) {
+			sandbox.stub(ClientModel.prototype, 'getBy')
+				.resolves(clients);
+		}
+	};
 
 	context('No authentication data', () => {
 
@@ -123,52 +144,63 @@ describe('Api Session', () => {
 			it('Should return the correct hasAccessToAllLocations', () => {
 				assert.strictEqual(session.hasAccessToAllLocations, false);
 			});
+		});
 
-			it('Should throw if client can\'t be fetched', async () => {
+		describe('Client getter', () => {
 
-				sinon.stub(ModelClient.prototype, 'getByField')
+			it('Should throw if model client not found', async () => {
+
+				await assert.rejects(() => session.client, {
+					name: 'ApiSessionError',
+					code: ApiSessionError.codes.INVALID_MODEL_CLIENT
+				});
+			});
+
+			it('Should throw if model client rejects', async () => {
+
+				loadModelClient();
+
+				sandbox.stub(ClientModel.prototype, 'getBy')
 					.rejects('Some model error');
 
-				await assert.rejects(() => session.client, ApiSessionError);
-			});
-
-			it('Should return the injected client', async () => {
-
-				const clientMock = {
-					id: 'some-client-id',
-					otherData: 'foo'
-				};
-
-				sinon.stub(ModelClient.prototype, 'getByField')
-					.resolves([{ ...clientMock }]);
-
-				sinon.assert.match(await session.client, {
-					id: 'some-client-id',
-					otherData: 'foo',
-					getInstance: sinon.match.func
+				await assert.rejects(() => session.client, {
+					name: 'ApiSessionError',
+					code: ApiSessionError.codes.INTERNAL_ERROR
 				});
 
-				sinon.assert.calledOnce(ModelClient.prototype.getByField);
-				sinon.assert.calledWithExactly(ModelClient.prototype.getByField, 'code', 'some-client-code');
+				sandbox.assert.calledWithExactly(ClientModel.prototype.getBy, 'code', 'some-client-code', { limit: 1 });
 			});
 
-			it('Should inject the client with a working getInstance', async () => {
+			it('Should throw if model client can\'t found the client', async () => {
 
-				const clientMock = {
-					id: 'some-client-id',
-					otherData: 'foo'
+				loadModelClient([]);
+
+				await assert.rejects(() => session.client, {
+					name: 'ApiSessionError',
+					code: ApiSessionError.codes.CLIENT_NOT_FOUND
+				});
+
+				sandbox.assert.calledWithExactly(ClientModel.prototype.getBy, 'code', 'some-client-code', { limit: 1 });
+			});
+
+			it('Should return the injected client with a working getInstance', async () => {
+
+				const baseClient = {
+					id: 'the-client-id-123',
+					code: 'some-client-code',
+					otherData: 876
 				};
 
-				sinon.stub(ModelClient.prototype, 'getByField')
-					.resolves([{ ...clientMock }]);
+				loadModelClient([baseClient]);
 
 				const client = await session.client;
 
-				sinon.assert.match(client, {
-					id: 'some-client-id',
-					otherData: 'foo',
-					getInstance: sinon.match.func
+				sandbox.assert.match(client, {
+					...baseClient,
+					getInstance: sandbox.match.func
 				});
+
+				sandbox.assert.calledWithExactly(ClientModel.prototype.getBy, 'code', 'some-client-code', { limit: 1 });
 
 				class Test {}
 
@@ -176,6 +208,36 @@ describe('Api Session', () => {
 
 				assert.deepStrictEqual(testInstance.session, session);
 			});
+
+			it('Should return client without getting if APISession instanced with client object', async () => {
+
+				loadModelClient();
+
+				sandbox.stub(ClientModel.prototype, 'getBy');
+
+				const offlineClient = {
+					id: 'client-id-3',
+					code: 'offline-client'
+				};
+
+				const offlineSession = new ApiSession({}, offlineClient);
+
+				const client = await offlineSession.client;
+
+				sandbox.assert.match(client, {
+					...offlineClient,
+					getInstance: sandbox.match.func
+				});
+
+				sandbox.assert.notCalled(ClientModel.prototype.getBy);
+
+				class Test {}
+
+				const testInstance = client.getInstance(Test);
+
+				assert.deepStrictEqual(testInstance.session, offlineSession);
+			});
+
 		});
 
 		describe('getSessionInstance', () => {
@@ -194,71 +256,66 @@ describe('Api Session', () => {
 
 			it('Should fetch the client from de DB only once', async () => {
 
-				const now = Date.now();
+				sandbox.useFakeTimers(Date.now() + (15 * 60 * 1000)); // Both requests will be issued "in 15 minutes"
 
-				sinon.stub(Date, 'now')
-					.returns(now + (15 * 60 * 1000)); // Both requests will be issued "in 15 minutes"
-
-				const clientMock = {
-					id: 'some-client-id',
-					otherData: 'foo'
+				const baseClient = {
+					id: 'the-client-id-123',
+					code: 'some-client-code',
+					otherData: 876
 				};
 
-				sinon.stub(ModelClient.prototype, 'getByField')
-					.resolves([{ ...clientMock }]);
+				loadModelClient([baseClient]);
 
-				sinon.assert.match(await session.client, {
-					id: 'some-client-id',
-					otherData: 'foo',
-					getInstance: sinon.match.func
+				sandbox.assert.match(await session.client, {
+					...baseClient,
+					getInstance: sandbox.match.func
 				});
 
-				sinon.assert.match(await session.client, {
-					id: 'some-client-id',
-					otherData: 'foo',
-					getInstance: sinon.match.func
+				sandbox.assert.match(await session.client, {
+					...baseClient,
+					getInstance: sandbox.match.func
 				});
 
-				sinon.assert.calledOnce(ModelClient.prototype.getByField);
-				sinon.assert.calledWithExactly(ModelClient.prototype.getByField, 'code', 'some-client-code');
+				sandbox.assert.calledOnceWithExactly(ClientModel.prototype.getBy, 'code', 'some-client-code', { limit: 1 });
 			});
 
 			it('Should fetch the client from de DB again after 10 minutes', async () => {
 
 				const now = Date.now();
 
-				sinon.stub(Date, 'now')
+				sandbox.stub(Date, 'now')
 					.onCall(0)
-					.returns(now + (30 * 60 * 1000)) // First requests will be issued "in 30 minutes"
+					.returns(now) // First requests will be issued "now"
 					.onCall(1)
-					.returns(now + (30 * 60 * 1000)) // First requests will be issued "in 30 minutes"
+					.returns(now + (15 * 60 * 1000)) // First requests will be issued "in 15 minutes"
 					.onCall(2)
-					.returns(now + (45 * 60 * 1000)) // Second requests will be issued "in 45 minutes"
-					.onCall(3)
-					.returns(now + (45 * 60 * 1000)); // Second requests will be issued "in 45 minutes"
+					.returns(now + (20 * 60 * 1000)); // Second requests will be issued "in 20 minutes"
 
-				const clientMock = {
-					id: 'some-client-id',
-					otherData: 'foo'
+				const baseClient = {
+					id: 'the-client-id-123',
+					code: 'some-client-code',
+					otherData: 876
 				};
 
-				sinon.stub(ModelClient.prototype, 'getByField')
-					.resolves([{ ...clientMock }]);
+				loadModelClient([baseClient]);
 
-				sinon.assert.match(await session.client, {
-					id: 'some-client-id',
-					otherData: 'foo',
-					getInstance: sinon.match.func
+				sandbox.assert.match(await session.client, {
+					...baseClient,
+					getInstance: sandbox.match.func
 				});
 
-				sinon.assert.match(await session.client, {
-					id: 'some-client-id',
-					otherData: 'foo',
-					getInstance: sinon.match.func
+				sandbox.assert.match(await session.client, {
+					...baseClient,
+					getInstance: sandbox.match.func
 				});
 
-				sinon.assert.calledTwice(ModelClient.prototype.getByField);
-				sinon.assert.calledWithExactly(ModelClient.prototype.getByField, 'code', 'some-client-code');
+				sandbox.assert.match(await session.client, {
+					...baseClient,
+					getInstance: sandbox.match.func
+				});
+
+				sandbox.assert.calledTwice(ClientModel.prototype.getBy);
+				sandbox.assert.calledWithExactly(ClientModel.prototype.getBy, 'code', 'some-client-code', { limit: 1 });
 			});
 		});
 

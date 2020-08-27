@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [3.0.0] - 2020-08-27
+### Added
+- APISession constrcutor new parameter `client` object
+- GitHub Actions
+
+### Changed
+- Using service model for getting clients
+
+### Removed
+- Included model and model dependency
+- Settings usage
+
 ## [2.0.0] - 2020-06-11
 ### Added
 - `locations` and `hasAccessToAllLocations` getters
