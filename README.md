@@ -75,7 +75,7 @@ const session = new ApiSession({
 
 console.log(`Session created for user ${session.userId} on client ${session.clientCode}.`);
 
-const sessionInjectedModel = session.getSessionInstance(SomeModel);
+const sessionInjectedModel = session.getSessionInstance(SomeModel, 'some-param', 'some-other-param');
 
 console.log(`Session is propagated for user ${sessionInjectedModel.session.userId} on client ${sessionInjectedModel.session.clientCode}.`);
 
