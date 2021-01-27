@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [3.1.1] - 2021-01-27
+### Added
+- Typings build from JSDoc
+
 ## [3.1.0] - 2020-12-17
 ### Added
 - Extra parameters for constructor when 'sessionate' a Class with `getSessionInstance()`
