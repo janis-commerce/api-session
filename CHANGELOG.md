@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [3.2.0] - 2021-11-18
 ### Added
-- Typings build from JSDoc
+- Getter and setter
 
 ## [3.1.1] - 2021-01-27
 ### Added
