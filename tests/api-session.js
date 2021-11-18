@@ -1,7 +1,7 @@
 'use strict';
 
 const assert = require('assert');
-const sandbox = require('sinon').createSandbox();
+const sinon = require('sinon');
 
 const mockRequire = require('mock-require');
 
@@ -11,7 +11,7 @@ const Client = require('./../lib/client');
 describe('Api Session', () => {
 
 	afterEach(() => {
-		sandbox.restore();
+		sinon.restore();
 		Client._instance = null; // eslint-disable-line
 		Client._clientsCache = null; // eslint-disable-line
 	});
@@ -28,14 +28,17 @@ describe('Api Session', () => {
 		mockRequire(Client.getRelativePath(), ClientModel);
 
 		if(clients) {
-			sandbox.stub(ClientModel.prototype, 'getBy')
+			sinon.stub(ClientModel.prototype, 'getBy')
 				.resolves(clients);
 		}
 	};
 
 	context('No authentication data', () => {
 
-		const session = new ApiSession();
+		let session;
+		beforeEach(() => {
+			session = new ApiSession();
+		});
 
 		describe('Getters', () => {
 			it('Should return undefined for userId', () => {
@@ -92,16 +95,19 @@ describe('Api Session', () => {
 
 	context('User related authentication data', () => {
 
-		const session = new ApiSession({
-			serviceName: 'some-service',
-			userId: 'some-user-id',
-			userIsDev: true,
-			clientId: 'some-client-id',
-			clientCode: 'some-client-code',
-			profileId: 'some-profile-id',
-			permissions: ['service:namespace:method1', 'service:namespace:method2'],
-			locations: ['location-1', 'location-2'],
-			hasAccessToAllLocations: false
+		let session;
+		beforeEach(() => {
+			session = new ApiSession({
+				serviceName: 'some-service',
+				userId: 'some-user-id',
+				userIsDev: true,
+				clientId: 'some-client-id',
+				clientCode: 'some-client-code',
+				profileId: 'some-profile-id',
+				permissions: ['service:namespace:method1', 'service:namespace:method2'],
+				locations: ['location-1', 'location-2'],
+				hasAccessToAllLocations: false
+			});
 		});
 
 		describe('Getters', () => {
@@ -160,7 +166,7 @@ describe('Api Session', () => {
 
 				loadModelClient();
 
-				sandbox.stub(ClientModel.prototype, 'getBy')
+				sinon.stub(ClientModel.prototype, 'getBy')
 					.rejects('Some model error');
 
 				await assert.rejects(() => session.client, {
@@ -168,7 +174,7 @@ describe('Api Session', () => {
 					code: ApiSessionError.codes.INTERNAL_ERROR
 				});
 
-				sandbox.assert.calledWithExactly(ClientModel.prototype.getBy, 'code', 'some-client-code', { limit: 1 });
+				sinon.assert.calledWithExactly(ClientModel.prototype.getBy, 'code', 'some-client-code', { limit: 1 });
 			});
 
 			it('Should throw if model client can\'t found the client', async () => {
@@ -180,7 +186,7 @@ describe('Api Session', () => {
 					code: ApiSessionError.codes.CLIENT_NOT_FOUND
 				});
 
-				sandbox.assert.calledWithExactly(ClientModel.prototype.getBy, 'code', 'some-client-code', { limit: 1 });
+				sinon.assert.calledWithExactly(ClientModel.prototype.getBy, 'code', 'some-client-code', { limit: 1 });
 			});
 
 			it('Should return the injected client with a working getInstance', async () => {
@@ -195,12 +201,12 @@ describe('Api Session', () => {
 
 				const client = await session.client;
 
-				sandbox.assert.match(client, {
+				sinon.assert.match(client, {
 					...baseClient,
-					getInstance: sandbox.match.func
+					getInstance: sinon.match.func
 				});
 
-				sandbox.assert.calledWithExactly(ClientModel.prototype.getBy, 'code', 'some-client-code', { limit: 1 });
+				sinon.assert.calledWithExactly(ClientModel.prototype.getBy, 'code', 'some-client-code', { limit: 1 });
 
 				class Test {}
 
@@ -213,7 +219,7 @@ describe('Api Session', () => {
 
 				loadModelClient();
 
-				sandbox.stub(ClientModel.prototype, 'getBy');
+				sinon.stub(ClientModel.prototype, 'getBy');
 
 				const offlineClient = {
 					id: 'client-id-3',
@@ -224,12 +230,12 @@ describe('Api Session', () => {
 
 				const client = await offlineSession.client;
 
-				sandbox.assert.match(client, {
+				sinon.assert.match(client, {
 					...offlineClient,
-					getInstance: sandbox.match.func
+					getInstance: sinon.match.func
 				});
 
-				sandbox.assert.notCalled(ClientModel.prototype.getBy);
+				sinon.assert.notCalled(ClientModel.prototype.getBy);
 
 				class Test {}
 
@@ -254,9 +260,9 @@ describe('Api Session', () => {
 
 		describe('Client cache', () => {
 
-			it('Should fetch the client from de DB only once', async () => {
+			it('Should fetch the client from de DB only once by default', async () => {
 
-				sandbox.useFakeTimers(Date.now() + (15 * 60 * 1000)); // Both requests will be issued "in 15 minutes"
+				sinon.useFakeTimers(Date.now() + (15 * 60 * 1000)); // Both requests will be issued "in 15 minutes"
 
 				const baseClient = {
 					id: 'the-client-id-123',
@@ -266,24 +272,24 @@ describe('Api Session', () => {
 
 				loadModelClient([baseClient]);
 
-				sandbox.assert.match(await session.client, {
+				sinon.assert.match(await session.client, {
 					...baseClient,
-					getInstance: sandbox.match.func
+					getInstance: sinon.match.func
 				});
 
-				sandbox.assert.match(await session.client, {
+				sinon.assert.match(await session.client, {
 					...baseClient,
-					getInstance: sandbox.match.func
+					getInstance: sinon.match.func
 				});
 
-				sandbox.assert.calledOnceWithExactly(ClientModel.prototype.getBy, 'code', 'some-client-code', { limit: 1 });
+				sinon.assert.calledOnceWithExactly(ClientModel.prototype.getBy, 'code', 'some-client-code', { limit: 1 });
 			});
 
-			it('Should fetch the client from de DB again after 10 minutes', async () => {
+			it('Should fetch the client from de DB again after 10 minutes by default', async () => {
 
 				const now = Date.now();
 
-				sandbox.stub(Date, 'now')
+				sinon.stub(Date, 'now')
 					.onCall(0)
 					.returns(now) // First requests will be issued "now"
 					.onCall(1)
@@ -299,24 +305,59 @@ describe('Api Session', () => {
 
 				loadModelClient([baseClient]);
 
-				sandbox.assert.match(await session.client, {
+				sinon.assert.match(await session.client, {
 					...baseClient,
-					getInstance: sandbox.match.func
+					getInstance: sinon.match.func
 				});
 
-				sandbox.assert.match(await session.client, {
+				sinon.assert.match(await session.client, {
 					...baseClient,
-					getInstance: sandbox.match.func
+					getInstance: sinon.match.func
 				});
 
-				sandbox.assert.match(await session.client, {
+				sinon.assert.match(await session.client, {
 					...baseClient,
-					getInstance: sandbox.match.func
+					getInstance: sinon.match.func
 				});
 
-				sandbox.assert.calledTwice(ClientModel.prototype.getBy);
-				sandbox.assert.calledWithExactly(ClientModel.prototype.getBy, 'code', 'some-client-code', { limit: 1 });
+				sinon.assert.calledTwice(ClientModel.prototype.getBy);
+				sinon.assert.calledWithExactly(ClientModel.prototype.getBy, 'code', 'some-client-code', { limit: 1 });
 			});
+
+			it('Should fetch the client from de DB again if useClientCache flag is set as false', async () => {
+
+				sinon.useFakeTimers(Date.now() + (15 * 60 * 1000)); // Both requests will be issued "in 15 minutes"
+
+				const baseClient = {
+					id: 'the-client-id-123',
+					code: 'some-client-code',
+					otherData: 876
+				};
+
+				loadModelClient([baseClient]);
+
+				// Turn cache off
+				session.useClientCache = false;
+
+				sinon.assert.match(await session.client, {
+					...baseClient,
+					getInstance: sinon.match.func
+				});
+
+				sinon.assert.match(await session.client, {
+					...baseClient,
+					getInstance: sinon.match.func
+				});
+
+				sinon.assert.match(await session.client, {
+					...baseClient,
+					getInstance: sinon.match.func
+				});
+
+				sinon.assert.calledThrice(ClientModel.prototype.getBy);
+				sinon.assert.calledWithExactly(ClientModel.prototype.getBy, 'code', 'some-client-code', { limit: 1 });
+			});
+
 		});
 
 		describe('Validate location', () => {
