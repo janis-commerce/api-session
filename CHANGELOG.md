@@ -7,8 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-### Changed
-- Updated dependencies
+## [3.3.0] - 2022-03-11
+### Added
+- `warehousesIds` and `hasAccessToAllWarehouses` getters
+- `validateWarehouse` method
 
 ## [3.2.0] - 2021-11-18
 ### Added
