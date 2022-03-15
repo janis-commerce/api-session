@@ -21,17 +21,17 @@ Creates an APISession with the `authorizationData` provided or the `client` for 
 
 #### Parameters
 
-- `authorizationData` is an **optional** _object_ with the following (also optional) properties: { userId, clientId, clientCode, profileId, permissions, locations, hasAccessToAllLocations, warehousesIds, hasAccessToAllWarehouses }
+- `authorizationData` is an **optional** _object_ with the following (also optional) properties: { userId, clientId, clientCode, profileId, permissions, hasAccessToAllLocations, locations, warehousesIds }
 - `client` is an **optional** _object_ for client injection without performing any DB gets
 
 ### `validateLocation(locationId)`
 
-Validate if the location given is valid for the session.
+Validate if the location given is valid for the session. It validates against the `locations` and the `hasAccessToAllLocations` boolean.
 Returns *Boolean*.
 
 ### `validateWarehouse(warehouseId)`. _Since 3.3.0_
 
-Validate if the warehouse given is valid for the session.
+Validate if the warehouse given is valid for the session. It validates against the `warehousesIds` and the `hasAccessToAllLocations` boolean.
 Returns *Boolean*.
 
 ### APISession getters
@@ -45,10 +45,9 @@ ApiSession has the following getters:
 * clientId {string} The ID of the client or undefined in case there is no client
 * clientCode {string} The code of the client or undefined in case there is no client
 * profileId {string} The ID of the profile or undefined in case there is no profile
-* locations {array<string>} The List of Locations to which the user has permissions
 * hasAccessToAllLocations {boolean} If has access to all locations
+* locations {array<string>} The List of Locations to which the user has permissions
 * warehousesIds {array<string>} The List of Warehouses to which the user has permissions. _Since 3.3.0_
-* hasAccessToAllWarehouses {boolean} If has access to all Warehouses. _Since 3.3.0_
 * permissions {array} The permission keys or undefined in case there are no permissions associated
 * *async* client {object} Resolves to the client object with the `getInstance()` method injected. The properties depend on your client internal structure. The client is injected with a `getInstance()` method to propagate the session to other instances.
 

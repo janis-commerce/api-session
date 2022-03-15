@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [3.3.1] - 2022-03-15
+### Removed
+- Field hasAccessToAllWarehouses from authentication
+
+### Changed
+- Now `validateWarehouse()` will return **true** when `hasAccessToAllLocations` is **true**
+
 ## [3.3.0] - 2022-03-11
 ### Added
 - `warehousesIds` and `hasAccessToAllWarehouses` getters

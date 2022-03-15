@@ -88,10 +88,6 @@ describe('Api Session', () => {
 			it('Should return undefined for warehousesIds', async () => {
 				assert.strictEqual(session.warehousesIds, undefined);
 			});
-
-			it('Should return undefined for hasAccessToAllWarehouses', async () => {
-				assert.strictEqual(session.hasAccessToAllWarehouses, undefined);
-			});
 		});
 
 		describe('Validate Locations', () => {
@@ -131,8 +127,7 @@ describe('Api Session', () => {
 				permissions: ['service:namespace:method1', 'service:namespace:method2'],
 				locations: [locationId1, locationId2],
 				hasAccessToAllLocations: false,
-				warehousesIds: [warehouseId1, warehouseId2],
-				hasAccessToAllWarehouses: false
+				warehousesIds: [warehouseId1, warehouseId2]
 			});
 		});
 
@@ -179,10 +174,6 @@ describe('Api Session', () => {
 
 			it('Should return the correct warehousesIds', () => {
 				assert.deepStrictEqual(session.warehousesIds, ['622b70bb68c06073782f2a30', '622b70bf2926e982ea3d1cbd']);
-			});
-
-			it('Should return the correct hasAccessToAllWarehouses', () => {
-				assert.strictEqual(session.hasAccessToAllWarehouses, false);
 			});
 		});
 
@@ -407,8 +398,8 @@ describe('Api Session', () => {
 					clientId: 'some-client-id',
 					clientCode: 'some-client-code',
 					profileId: 'some-profile-id',
-					permissions: ['service:namespace:method1', 'service:namespace:method2'],
-					hasAccessToAllLocations: false
+					hasAccessToAllLocations: false,
+					permissions: ['service:namespace:method1', 'service:namespace:method2']
 				});
 
 				assert.strictEqual(invalidSession.validateLocation(locationId1), false);
@@ -422,8 +413,8 @@ describe('Api Session', () => {
 					clientCode: 'some-client-code',
 					profileId: 'some-profile-id',
 					permissions: ['service:namespace:method1', 'service:namespace:method2'],
-					locations: { 1: locationId1, 2: locationId2 },
-					hasAccessToAllLocations: false
+					hasAccessToAllLocations: false,
+					locations: { 1: locationId1, 2: locationId2 }
 				});
 
 				assert.strictEqual(invalidSession.validateLocation(locationId1), false);
@@ -437,8 +428,8 @@ describe('Api Session', () => {
 					clientCode: 'some-client-code',
 					profileId: 'some-profile-id',
 					permissions: ['service:namespace:method1', 'service:namespace:method2'],
-					locations: [],
-					hasAccessToAllLocations: false
+					hasAccessToAllLocations: false,
+					locations: []
 				});
 
 				assert.strictEqual(invalidSession.validateLocation(locationId1), false);
@@ -471,11 +462,11 @@ describe('Api Session', () => {
 
 		describe('Validate Warehouse', () => {
 
-			it('Should return false when session has not access to all warehouse and no warehouseId is passed', () => {
+			it('Should return false when session has not access to all locations and no warehouseId is passed', () => {
 				assert.strictEqual(session.validateWarehouse(), false);
 			});
 
-			it('Should return false when session has not warehouses field and hasAccessToAllWarehouses as false', () => {
+			it('Should return false when session has not warehouses field and hasAccessToAllLocations as false', () => {
 
 				const invalidSession = new ApiSession({
 					userId: 'some-user-id',
@@ -483,13 +474,13 @@ describe('Api Session', () => {
 					clientCode: 'some-client-code',
 					profileId: 'some-profile-id',
 					permissions: ['service:namespace:method1', 'service:namespace:method2'],
-					hasAccessToAllWarehouses: false
+					hasAccessToAllLocations: false
 				});
 
 				assert.strictEqual(invalidSession.validateWarehouse(warehouseId1), false);
 			});
 
-			it('Should return false when session has not valid warehousesIds field and hasAccessToAllWarehouses as false', () => {
+			it('Should return false when session has not valid warehousesIds field and hasAccessToAllLocations as false', () => {
 
 				const invalidSession = new ApiSession({
 					userId: 'some-user-id',
@@ -497,14 +488,14 @@ describe('Api Session', () => {
 					clientCode: 'some-client-code',
 					profileId: 'some-profile-id',
 					permissions: ['service:namespace:method1', 'service:namespace:method2'],
-					warehousesIds: { 1: warehouseId1, 2: warehouseId2 },
-					hasAccessToAllWarehouses: false
+					hasAccessToAllLocations: false,
+					warehousesIds: { 1: warehouseId1, 2: warehouseId2 }
 				});
 
 				assert.strictEqual(invalidSession.validateWarehouse(warehouseId1), false);
 			});
 
-			it('Should return false when session has an empty array of warehousesIds and hasAccessToAllWarehouses as false', () => {
+			it('Should return false when session has an empty array of warehousesIds and hasAccessToAllLocations as false', () => {
 
 				const invalidSession = new ApiSession({
 					userId: 'some-user-id',
@@ -512,19 +503,19 @@ describe('Api Session', () => {
 					clientCode: 'some-client-code',
 					profileId: 'some-profile-id',
 					permissions: ['service:namespace:method1', 'service:namespace:method2'],
-					warehousesIds: [],
-					hasAccessToAllWarehouses: false
+					hasAccessToAllLocations: false,
+					warehousesIds: []
 				});
 
 				assert.strictEqual(invalidSession.validateWarehouse(warehouseId1), false);
 			});
 
-			it('Should return true when session has access to that location', () => {
+			it('Should return true when session has access to that warehouse', () => {
 				assert.strictEqual(session.validateWarehouse(warehouseId1), true);
 				assert.strictEqual(session.validateWarehouse(warehouseId2), true);
 			});
 
-			it('Should return false when session has no access to that location', () => {
+			it('Should return false when session has no access to that warehouse', () => {
 				assert.strictEqual(session.validateWarehouse(warehouseId3), false);
 				assert.strictEqual(session.validateWarehouse(warehouseId4), false);
 			});
@@ -537,7 +528,7 @@ describe('Api Session', () => {
 					clientCode: 'some-client-code',
 					profileId: 'some-profile-id',
 					permissions: ['service:namespace:method1', 'service:namespace:method2'],
-					hasAccessToAllWarehouses: true
+					hasAccessToAllLocations: true
 				});
 
 				assert.strictEqual(invalidSession.validateWarehouse(warehouseId4), true);
