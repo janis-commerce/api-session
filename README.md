@@ -44,6 +44,8 @@ ApiSession has the following getters:
 * isService {boolean} If session is associated to a service
 * clientId {string} The ID of the client or undefined in case there is no client
 * clientCode {string} The code of the client or undefined in case there is no client
+* currency {string|undefined} The currency of the client or undefined in case there is no client nor currency related. _Since 3.4.0_
+* currencyDisplay {string} The currency display of the client or default value in case there is no client. Possible values: `code`, `symbol`. Default: `symbol`. _Since 3.4.0_
 * profileId {string} The ID of the profile or undefined in case there is no profile
 * hasAccessToAllLocations {boolean} If has access to all locations
 * locations {array<string>} The List of Locations to which the user has permissions

@@ -53,6 +53,14 @@ describe('Api Session', () => {
 				assert.strictEqual(session.clientCode, undefined);
 			});
 
+			it('Should return undefined for currency', () => {
+				assert.strictEqual(session.currency, undefined);
+			});
+
+			it('Should return undefined for currencyDisplay', () => {
+				assert.strictEqual(session.currencyDisplay, undefined);
+			});
+
 			it('Should return undefined for profileId', () => {
 				assert.strictEqual(session.profileId, undefined);
 			});
@@ -116,6 +124,7 @@ describe('Api Session', () => {
 		const warehouseId4 = '622b7204c7b2e81e7121dd41';
 
 		let session;
+
 		beforeEach(() => {
 			session = new ApiSession({
 				serviceName: 'some-service',
@@ -123,6 +132,8 @@ describe('Api Session', () => {
 				userIsDev: true,
 				clientId: 'some-client-id',
 				clientCode: 'some-client-code',
+				currency: 'EUR',
+				currencyDisplay: 'code',
 				profileId: 'some-profile-id',
 				permissions: ['service:namespace:method1', 'service:namespace:method2'],
 				locations: [locationId1, locationId2],
@@ -142,6 +153,14 @@ describe('Api Session', () => {
 
 			it('Should return the correct clientCode', () => {
 				assert.strictEqual(session.clientCode, 'some-client-code');
+			});
+
+			it('Should return the correct currency', () => {
+				assert.strictEqual(session.currency, 'EUR');
+			});
+
+			it('Should return the correct currencyDisplay', () => {
+				assert.strictEqual(session.currencyDisplay, 'code');
 			});
 
 			it('Should return the correct profileId', () => {
