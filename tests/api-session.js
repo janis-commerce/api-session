@@ -1,3 +1,5 @@
+/* eslint-disable max-classes-per-file */
+
 'use strict';
 
 const assert = require('assert');
@@ -6,7 +8,7 @@ const sinon = require('sinon');
 const mockRequire = require('mock-require');
 
 const { ApiSession, ApiSessionError } = require('../lib');
-const Client = require('./../lib/client');
+const Client = require('../lib/client');
 
 describe('Api Session', () => {
 
@@ -123,6 +125,8 @@ describe('Api Session', () => {
 		const warehouseId3 = '622b7200dbd397165b2fd4f0';
 		const warehouseId4 = '622b7204c7b2e81e7121dd41';
 
+		const sellerId = '622b7204c7b2e81e7121ddff';
+
 		let session;
 
 		beforeEach(() => {
@@ -138,7 +142,8 @@ describe('Api Session', () => {
 				permissions: ['service:namespace:method1', 'service:namespace:method2'],
 				locations: [locationId1, locationId2],
 				hasAccessToAllLocations: false,
-				warehousesIds: [warehouseId1, warehouseId2]
+				warehousesIds: [warehouseId1, warehouseId2],
+				sellerId
 			});
 		});
 
