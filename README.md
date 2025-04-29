@@ -50,6 +50,7 @@ ApiSession has the following getters:
 * hasAccessToAllLocations {boolean} If has access to all locations
 * locations {array<string>} The List of Locations to which the user has permissions
 * warehousesIds {array<string>} The List of Warehouses to which the user has permissions. _Since 3.3.0_
+* sellerId {string} The Seller ID to which the user has been assign. _Since 3.4.0_
 * permissions {array} The permission keys or undefined in case there are no permissions associated
 * *async* client {object} Resolves to the client object with the `getInstance()` method injected. The properties depend on your client internal structure. The client is injected with a `getInstance()` method to propagate the session to other instances.
 
