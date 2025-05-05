@@ -98,6 +98,10 @@ describe('Api Session', () => {
 			it('Should return undefined for warehousesIds', async () => {
 				assert.strictEqual(session.warehousesIds, undefined);
 			});
+
+			it('Should return undefined for sellerId', () => {
+				assert.strictEqual(session.sellerId, undefined);
+			});
 		});
 
 		describe('Validate Locations', () => {
@@ -198,6 +202,10 @@ describe('Api Session', () => {
 
 			it('Should return the correct warehousesIds', () => {
 				assert.deepStrictEqual(session.warehousesIds, ['622b70bb68c06073782f2a30', '622b70bf2926e982ea3d1cbd']);
+			});
+
+			it('Should return the correct sellerId', () => {
+				assert.strictEqual(session.sellerId, sellerId);
 			});
 		});
 
