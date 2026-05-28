@@ -18,6 +18,13 @@ module.exports = {
 		JANIS_ENV_ALIAS: true
 	},
 
+	overrides: [{
+		files: ['tests/**/*.js'],
+		rules: {
+			'max-classes-per-file': 0
+		}
+	}],
+
 	parserOptions: {
 		sourceType: 'script'
 	},
@@ -27,6 +34,7 @@ module.exports = {
 	},
 
 	rules: {
+		strict: ['error', 'global'],
 		'operator-linebreak': 0,
 		'no-continue': 0,
 		'no-plusplus': 0,

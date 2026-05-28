@@ -6,7 +6,7 @@ const sinon = require('sinon');
 const mockRequire = require('mock-require');
 
 const { ApiSession, ApiSessionError } = require('../lib');
-const Client = require('./../lib/client');
+const Client = require('../lib/client');
 
 describe('Api Session', () => {
 
